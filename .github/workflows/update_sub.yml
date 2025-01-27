@@ -3,7 +3,7 @@ name: Update Subscriptions
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 8 * * *'  # 每天UTC时间8点运行 (北京时间16点)
+    - cron: '0 0 * * *'
 
 jobs:
   convert-subs:
@@ -12,45 +12,43 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        persist-credentials: false  # 重要：使用推荐的安全凭证配置
 
     - name: Setup subconverter
       run: |
         wget https://github.com/tindy2013/subconverter/releases/latest/download/subconverter_linux64.tar.gz
         tar -xzf subconverter_linux64.tar.gz
         chmod +x subconverter/subconverter
+        # 启动后台服务并指定配置文件（默认端口25500）
         ./subconverter/subconverter &
 
     - name: Wait for service
       run: |
+        # 等待服务启动完成
         timeout 30 bash -c 'while ! nc -z localhost 25500; do sleep 1; done' || true
-        sleep 5
+        sleep 5  # 额外等待确保服务就绪
 
     - name: Create doc directory
       run: mkdir -p doc
 
     - name: Process subscriptions
       run: |
-        line_number=0
         while IFS= read -r sub_url; do
-          ((line_number++))
           if [ -n "$sub_url" ]; then
-            filename="sub_${line_number}.json"  # 使用行号命名
+            # 生成更易读的文件名（域名 + 哈希）
+            domain=$(echo "$sub_url" | awk -F/ '{print $3}')
+            hash=$(echo "$sub_url" | md5sum | cut -c1-8)
+            filename="${domain}_${hash}.json"
             
-            # API调用
+            # 通过API转换订阅
             curl -sS "http://127.0.0.1:25500/sub?target=v2ray&url=$sub_url" \
               -o "doc/$filename"
             
-            # 结果验证
-            if grep -q "error" "doc/$filename"; then
-              echo "Error in conversion for line $line_number"
-              rm "doc/$filename"
-            elif [ ! -s "doc/$filename" ]; then
-              echo "Empty output for line $line_number"
+            # 验证输出文件
+            if [ ! -s "doc/$filename" ]; then
+              echo "Error: Empty output for $sub_url"
               rm "doc/$filename"
             else
-              echo "Success: line $line_number saved as $filename"
+              echo "Successfully converted: $filename"
             fi
             
             sleep 2
