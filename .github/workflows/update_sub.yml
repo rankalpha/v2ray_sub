@@ -55,15 +55,16 @@ jobs:
           fi
         done < sub.txt
 
+    - name: Set timestamp
+      id: timestamp
+      run: echo "TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+    
     - name: Commit changes
       uses: github-actions-x/commit@v2.9
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: "Auto update subscriptions $(date +'%Y-%m-%d %H:%M:%S')"
+        commit-message: "Auto update subscriptions ${{ env.TIMESTAMP }}"
         files: doc/**
         rebase: 'true'
         name: GitHub Actions
         email: actions@github.com
-        add_args: '--force'
-        # 使用安全令牌配置
-        token: ${{ secrets.GITHUB_TOKEN }}
