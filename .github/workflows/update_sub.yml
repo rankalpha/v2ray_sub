@@ -56,14 +56,14 @@ jobs:
         done < sub.txt
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@v9  # 使用经过验证的提交方案
+      uses: github-actions-x/commit@v2.9
       with:
-        author_name: GitHub Actions
-        author_email: actions@github.com
-        message: "Update subscriptions $(date -u +'%Y-%m-%d %H:%M:%S')"
-        add: 'doc/*'
-        # 重要配置：允许空提交和强制添加文件
-        allow_empty: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Auto update subscriptions $(date +'%Y-%m-%d %H:%M:%S')"
+        files: doc/**
+        rebase: 'true'
+        name: GitHub Actions
+        email: actions@github.com
         add_args: '--force'
         # 使用安全令牌配置
         token: ${{ secrets.GITHUB_TOKEN }}
