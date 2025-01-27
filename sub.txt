@@ -1,2 +1,6 @@
 https://raw.githubusercontent.com/anaer/Sub/main/clash.yaml
-https://raw.githubusercontent.com/lanmoxueer/proxies_merge/master/output.yaml
+https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/clash.yml
+https://raw.githubusercontent.com/sangowd/free_doom/main/kingfu.yaml
+https://raw.githubusercontent.com/ssrsub/ssr/main/Clash.yml
+https://raw.githubusercontent.com/moneyfly1/sublist/main/clash.yml
+
