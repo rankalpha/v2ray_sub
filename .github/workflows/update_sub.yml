@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
-
+env:
+  TZ: Asia/Shanghai  # 设置时区
+  
 jobs:
   convert-subs:
     runs-on: ubuntu-latest
